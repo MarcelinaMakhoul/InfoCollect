@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         spreadsheetId: SPREADSHEET_ID,
         ranges: [SHEET_NAME],
       });
-    } catch (error) {
+    } catch {
       // Sheet doesn't exist, create it
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: SPREADSHEET_ID,

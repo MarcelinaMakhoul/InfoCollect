@@ -235,17 +235,10 @@ const candidateInterestOptions = [
 
 // Years of Experience options
 const yearsOptions = [
-  { value: '0-1', label: '0-1 years' },
-  { value: '1-2', label: '1-2 years' },
-  { value: '2-3', label: '2-3 years' },
-  { value: '3-4', label: '3-4 years' },
-  { value: '4-5', label: '4-5 years' },
-  { value: '5-6', label: '5-6 years' },
-  { value: '6-7', label: '6-7 years' },
-  { value: '7-8', label: '7-8 years' },
-  { value: '8-9', label: '8-9 years' },
-  { value: '9-10', label: '9-10 years' },
-  { value: '10-15', label: '10-15 years' }
+  { value: '0-2', label: '0-2 years' },
+  { value: '2-5', label: '2-5 years' },
+  { value: '5-10', label: '5-10 years' },
+  { value: '10+', label: '10+ years' }
 ];
 
 export default function InfoForm() {
@@ -791,7 +784,7 @@ export default function InfoForm() {
                     Additional Information
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 pt-4 pointer-events-none">
+                    <div className="absolute top-4 left-4 pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                       </svg>
