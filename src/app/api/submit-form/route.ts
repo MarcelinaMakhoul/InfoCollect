@@ -76,6 +76,35 @@ export async function POST(request: NextRequest) {
         spreadsheetId: SPREADSHEET_ID,
         ranges: [SHEET_NAME],
       });
+      
+      // Sheet exists, check if headers are present
+      const headerCheck = await sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `${SHEET_NAME}!A1:H1`,
+      });
+      
+      // If no headers or wrong number of headers, update them
+      if (!headerCheck.data.values || headerCheck.data.values.length === 0 || headerCheck.data.values[0].length < 8) {
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: SPREADSHEET_ID,
+          range: `${SHEET_NAME}!A1:H1`,
+          valueInputOption: 'RAW',
+          requestBody: {
+            values: [
+              [
+                'Timestamp',
+                'Full Name',
+                'Phone',
+                'Email',
+                'Looking For',
+                'Years of Experience',
+                'Area of Interest',
+                'Additional Information',
+              ],
+            ],
+          },
+        });
+      }
     } catch {
       // Sheet doesn't exist, create it
       await sheets.spreadsheets.batchUpdate({
