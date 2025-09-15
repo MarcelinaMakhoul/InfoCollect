@@ -22,10 +22,11 @@ async function getGoogleSheets() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { fullName, phone, email, lookingFor, yearsOfExperience, candidateInterest } = body;
+    console.log('Received form data:', body);
+    const { fullName, phone, countryCode, email, lookingFor, yearsOfExperience, candidateInterest } = body;
 
     // Validate required fields
-    if (!fullName || !phone || !email || !lookingFor || !yearsOfExperience) {
+    if (!fullName || !phone || !countryCode || !email || !lookingFor || !yearsOfExperience) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -33,7 +34,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!SPREADSHEET_ID || !process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-      console.error('Missing Google Sheets configuration');
+      console.error('Missing Google Sheets configuration:', {
+        hasSpreadsheetId: !!SPREADSHEET_ID,
+        hasClientEmail: !!process.env.GOOGLE_CLIENT_EMAIL,
+        hasPrivateKey: !!process.env.GOOGLE_PRIVATE_KEY
+      });
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
@@ -46,7 +51,7 @@ export async function POST(request: NextRequest) {
     const rowData = [
       new Date().toISOString(), // Timestamp
       fullName,
-      phone,
+      `${countryCode} ${phone}`, // Combined country code and phone
       email,
       lookingFor,
       yearsOfExperience,
