@@ -10,6 +10,7 @@ interface FormData {
   lookingFor: 'candidate' | 'partner' | '';
   yearsOfExperience: string;
   candidateInterest: 'problem-solving' | 'developing' | '';
+  additionalInfo: string;
 }
 
 interface FormErrors {
@@ -20,6 +21,7 @@ interface FormErrors {
   lookingFor?: string;
   yearsOfExperience?: string;
   candidateInterest?: string;
+  additionalInfo?: string;
 }
 
 // Country codes data 
@@ -254,7 +256,8 @@ export default function InfoForm() {
     email: '',
     lookingFor: '',
     yearsOfExperience: '',
-    candidateInterest: ''
+    candidateInterest: '',
+    additionalInfo: ''
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -265,12 +268,22 @@ export default function InfoForm() {
   const [isCandidateInterestDropdownOpen, setIsCandidateInterestDropdownOpen] = useState(false);
   const [isYearsDropdownOpen, setIsYearsDropdownOpen] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Special handling for phone number - only allow numbers
+    if (name === 'phone') {
+      const numericValue = value.replace(/[^0-9]/g, '');
+      setFormData(prev => ({
+        ...prev,
+        [name]: numericValue
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
     
     // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
@@ -398,7 +411,8 @@ export default function InfoForm() {
           email: '',
           lookingFor: '',
           yearsOfExperience: '',
-          candidateInterest: ''
+          candidateInterest: '',
+          additionalInfo: ''
         });
       } else {
         setSubmitStatus('error');
@@ -767,6 +781,41 @@ export default function InfoForm() {
                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                       </svg>
                       {errors.yearsOfExperience}
+                    </p>
+                  )}
+                </div>
+
+                {/* Additional Information */}
+                <div className="group">
+                  <label htmlFor="additionalInfo" className="block text-sm font-semibold text-gray-800 mb-2 sm:mb-3 group-focus-within:text-blue-600 transition-colors">
+                    Additional Information
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 pt-4 pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                      </svg>
+                    </div>
+                    <textarea
+                      id="additionalInfo"
+                      name="additionalInfo"
+                      value={formData.additionalInfo}
+                      onChange={handleInputChange}
+                      rows={4}
+                      className={`w-full pl-12 pr-4 py-3 sm:py-4 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm text-base resize-none ${
+                        errors.additionalInfo 
+                          ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      placeholder="Tell us more about yourself, your goals, or any additional information you'd like to share..."
+                    />
+                  </div>
+                  {errors.additionalInfo && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors.additionalInfo}
                     </p>
                   )}
                 </div>

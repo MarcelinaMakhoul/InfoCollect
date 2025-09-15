@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     console.log('Received form data:', body);
-    const { fullName, phone, countryCode, email, lookingFor, yearsOfExperience, candidateInterest } = body;
+    const { fullName, phone, countryCode, email, lookingFor, yearsOfExperience, candidateInterest, additionalInfo } = body;
 
     // Validate required fields
     if (!fullName || !phone || !countryCode || !email || !lookingFor || !yearsOfExperience) {
@@ -39,6 +39,17 @@ export async function POST(request: NextRequest) {
         hasClientEmail: !!process.env.GOOGLE_CLIENT_EMAIL,
         hasPrivateKey: !!process.env.GOOGLE_PRIVATE_KEY
       });
+      
+      // Fallback: Return success without saving to Google Sheets
+      console.log('Form data received (not saved to Google Sheets):', {
+        fullName,
+        phone: `${countryCode} ${phone}`,
+        email,
+        lookingFor,
+        yearsOfExperience,
+        candidateInterest
+      });
+      
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
@@ -56,6 +67,7 @@ export async function POST(request: NextRequest) {
       lookingFor,
       yearsOfExperience,
       candidateInterest || '', // Empty string if not provided
+      additionalInfo || '', // Additional information
     ];
 
     // Check if sheet exists, if not create it
@@ -84,7 +96,7 @@ export async function POST(request: NextRequest) {
       // Add headers to the new sheet
       await sheets.spreadsheets.values.update({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!A1:G1`,
+        range: `${SHEET_NAME}!A1:H1`,
         valueInputOption: 'RAW',
         requestBody: {
           values: [
@@ -96,6 +108,7 @@ export async function POST(request: NextRequest) {
               'Looking For',
               'Years of Experience',
               'Area of Interest',
+              'Additional Information',
             ],
           ],
         },
@@ -105,7 +118,7 @@ export async function POST(request: NextRequest) {
     // Append the new row
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!A:G`,
+      range: `${SHEET_NAME}!A:H`,
       valueInputOption: 'RAW',
       requestBody: {
         values: [rowData],
